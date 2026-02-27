@@ -1,5 +1,9 @@
-!custom_cfg/*
-!autoexec.cfg
-
+.claude
+.idea
 *.vcfg
 *.cfg
+
+!custom_cfg/**
+!autoexec.cfg
+!readme.md
+!install.cmd

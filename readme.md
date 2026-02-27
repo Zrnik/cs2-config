@@ -1,5 +1,5 @@
 # Launch Options
 
 ```
--noforcemaccel -noforcemspd -noforcemparms -freq 144 -console -novid -tickrate 128
+-freq 144 -console -novid +exec autoexec
 ```
