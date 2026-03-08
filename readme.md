@@ -5,8 +5,38 @@ Personal Counter-Strike 2 configuration with keybinds, crosshair recoil modes, p
 ## Launch Options
 
 ```
--freq 144 -console -novid +exec autoexec
+-freq 144 -console -novid -nojoy -high +exec autoexec
 ```
+
+## FPS & Performance
+
+### Critical: Display Mode = Fullscreen
+
+Borderless window can cost 100–150 FPS. Set **Fullscreen** in Video Settings.
+
+### NVIDIA Control Panel
+
+Go to *Manage 3D Settings → Program Settings → CS2*:
+
+| Setting | Value |
+|---------|-------|
+| Preferred graphics processor | **High-performance NVIDIA** (not Intel UHD 770!) |
+| Power Management Mode | **Prefer Maximum Performance** |
+| Low Latency Mode | **Ultra** |
+| Vertical Sync | **Off** |
+
+### In-game Video Settings
+
+| Setting | Value |
+|---------|-------|
+| Display Mode | Fullscreen |
+| Global Shadow Quality | High |
+| Model / Texture Detail | Low |
+| Shader Detail | Low |
+| Particle Detail | Low |
+| VSync | Off |
+| NVIDIA Reflex | Enabled |
+| Boost Player Contrast | On |
 
 ## Config Structure
 
@@ -20,6 +50,7 @@ autoexec.cfg
   custom_cfg/common.cfg
   custom_cfg/buy.cfg
   custom_cfg/misc.cfg
+  custom_cfg/fps.cfg
   custom_cfg/walk/initialize.cfg
   custom_cfg/practice/binds.cfg
   custom_cfg/crosshair_state.cfg
@@ -105,8 +136,7 @@ Left-side shifted viewmodel with FOV 60 (`viewmodel_offset_x -1`, `viewmodel_off
 
 ### Network / Misc
 
-- `cl_interp_ratio 1` + `cl_interp 0.03125` — reduced interpolation delay
-- `fps_max 0` — uncapped framerate
+- `cl_interp_ratio 1` — interpolation ratio
 - `mm_dedicated_search_maxping 35` — low ping matchmaking
 
 ## Practice Mode
