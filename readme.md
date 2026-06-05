@@ -2,35 +2,126 @@
 
 Personal Counter-Strike 2 configuration with keybinds, crosshair recoil modes, practice setup, and utility scripts.
 
+## Automatic Setup
+
+On Debian/Linux Steam, use:
+
+```bash
+./setup.sh
+```
+
+It installs `autoexec.cfg` + `custom_cfg/` and writes native 1920x1080 CS2 LaunchOptions into Steam's `localconfig.vdf`. If Steam is running, setup stops it before editing `localconfig.vdf` and starts it again afterwards so Steam does not overwrite the change.
+
+`./setup.sh --gamescope` / `./setup.sh --stretched` keeps desktop resolution unchanged and uses gamescope as an external 4:3 scaler, but it is experimental on this machine: CS2 currently segfaults shortly after launch under gamescope. The removed KDE/X11 display-mode switching approach is intentionally not used because it shrinks the desktop while Alt-Tabbing.
+
+Default monitor selection is `--monitor best`, which picks the enabled display with the highest current refresh rate. On this setup that selects the AOC 1920x1080@144Hz display. To force KDE/X11 primary monitor or a connector explicitly:
+
+```bash
+./setup.sh --monitor primary
+./setup.sh --monitor HDMI-A-6
+```
+
+Useful modes:
+
+```bash
+./setup.sh --dry-run
+./setup.sh --stretched
+./setup.sh --gamescope
+./setup.sh --native
+./setup.sh --no-restart-steam
+./setup.sh --no-launch-options
+./setup.sh --no-install-gamescope
+```
+
+Use `--no-restart-steam` if you want setup to refuse while Steam is running instead of stopping and starting it automatically. Use `--force-steam-running` only for diagnostics/dry-runs.
+
+Setup normally handles Steam automatically: it stops Steam before editing `localconfig.vdf`, then starts Steam again. If Steam was not running, it is left stopped.
+
 ## Launch Options
 
-Set this in Steam: *Library -> Counter-Strike 2 -> Properties -> Launch Options*.
+Manual reference. Set this in Steam: *Library -> Counter-Strike 2 -> Properties -> Launch Options*.
 
-### Debian/Linux safe default
+### Windows: native 1920x1080 fullscreen
 
-Use native fullscreen-windowed output and let CS2 keep the monitor resolution:
+Use native 16:9 fullscreen instead of forced 4:3 stretched:
 
-```
--freq 144 -fullscreen -console -novid -nojoy -high +exec autoexec
-```
-
-Do **not** use `-w 1280 -h 960` with CS2's Linux fullscreen-windowed mode unless you are also using an external scaler. On Linux it can start as a small 1280x960 surface or black-screen after a display-mode toggle.
-
-### 4:3 stretched on Linux
-
-For reliable 1280x960 stretched output on Linux, use an external scaler such as `gamescope` instead of trying to force it from `autoexec.cfg`:
-
-```
-gamescope -f -w 1280 -h 960 -W 1920 -H 1080 -S stretch -- %command% -freq 144 -console -novid -nojoy -high +exec autoexec
+```text
+-freq 144 -fullscreen -w 1920 -h 1080 -console -novid -nojoy -high +exec autoexec
 ```
 
-Adjust `-W`/`-H` to your monitor's native resolution.
+### Debian/Linux: native 1920x1080 safe default
+
+Linux CS2 exposes **Windowed** and **Fullscreen Windowed**, not Windows-style true exclusive fullscreen. Use native 16:9 output to avoid the blocky 4:3 compositor scaling and Alt-Tab freezes seen with low stretched resolutions:
+
+```text
+-freq 144 -fullscreen -w 1920 -h 1080 -console -novid -nojoy -high +exec autoexec
+```
+
+Do **not** use `-w 1280 -h 960` or lower 4:3 modes with CS2's Linux fullscreen-windowed mode unless you are also using an external scaler. On Linux it can look blocky, start as a small surface, black-screen, or freeze after Alt-Tab.
+
+### Debian/Linux: 4:3 stretched via gamescope
+
+For 1280x960 stretched output on Linux without changing desktop resolution, gamescope is the right class of external scaler, but on this machine CS2 currently segfaults under gamescope. Keep this as an experimental reference, not the default:
+
+```text
+gamescope --prefer-vk-device 10de:2805 -f -b --force-windows-fullscreen -r 144 -w 1280 -h 960 -W 1920 -H 1080 -S stretch --display-index 0 -- %command% -freq 144 -console -novid -nojoy -high +exec autoexec
+```
+
+Adjust `-W`/`-H` to your monitor's native resolution, for example:
+
+```text
+# 2560x1440 monitor
+gamescope --prefer-vk-device 10de:2805 -f -b --force-windows-fullscreen -r 144 -w 1280 -h 960 -W 2560 -H 1440 -S stretch --display-index 0 -- %command% -freq 144 -console -novid -nojoy -high +exec autoexec
+```
+
+`--prefer-vk-device 10de:2805` forces gamescope to use the NVIDIA RTX 4060 Ti. Without it, Steam can start gamescope on the Intel iGPU and gamescope may abort with `Assertion 'modifiers.size() > 0' failed` before CS2 starts. `--force-windows-fullscreen` makes CS2 fill the nested gamescope surface instead of opening as a small inner window. `--display-index 0` targets the first connected display; remove it or rerun setup with `--monitor primary` if the fullscreen gamescope window appears on the wrong monitor.
+
+Do not add CS2's own `-w 1280 -h 960` after `%command%` when using gamescope; gamescope already controls the render size with its own `-w`/`-h`.
+
+### Installing gamescope on Debian
+
+Check whether it is already installed:
+
+```bash
+command -v gamescope
+```
+
+Try the normal distro package first:
+
+```bash
+sudo apt update
+apt-cache policy gamescope
+sudo apt install gamescope
+```
+
+On Debian 13 (trixie), `gamescope` may be available from `trixie-backports` rather than the base repository. If `apt-cache policy gamescope` shows `Candidate: (none)`, enable backports and install from there:
+
+```bash
+echo 'deb http://deb.debian.org/debian trixie-backports main contrib non-free non-free-firmware' \
+  | sudo tee /etc/apt/sources.list.d/trixie-backports.list
+sudo apt update
+apt-cache policy gamescope
+sudo apt install -t trixie-backports gamescope
+```
+
+If backports still does not provide `gamescope`, install it from another repository that provides it for your Debian version, or build it from Valve's upstream source:
+
+```bash
+git clone --recursive https://github.com/ValveSoftware/gamescope.git
+cd gamescope
+git submodule update --init
+meson setup build/
+ninja -C build/
+sudo meson install -C build/ --skip-subprojects
+```
+
+Upstream build dependencies change over time; if `meson setup` reports missing packages, install the named `-dev` packages from Debian and rerun the command.
 
 ## FPS & Performance
 
 ### Debian/Linux display mode
 
-On Linux, CS2 does not expose the same true exclusive fullscreen mode as Windows. The useful modes are **Windowed** and **Fullscreen Windowed**. Use **Fullscreen Windowed** for normal play.
+On Linux, CS2 does not expose the same true exclusive fullscreen mode as Windows. The useful modes are **Windowed** and **Fullscreen Windowed**. Use native 1920x1080 for normal play.
 
 Display mode is not a good fit for `autoexec.cfg`: it is applied before/around engine startup, and changing it after launch can cause a black screen on Linux. Prefer launch options or `gamescope`.
 
@@ -49,7 +140,7 @@ Go to *Manage 3D Settings → Program Settings → CS2*:
 
 | Setting | Value |
 |---------|-------|
-| Display Mode | Fullscreen Windowed |
+| Display Mode | Fullscreen / Fullscreen Windowed at 1920x1080 |
 | Global Shadow Quality | High |
 | Model / Texture Detail | Low |
 | Shader Detail | Low |
