@@ -165,21 +165,68 @@ Press `HOME` to activate practice mode on a local server. Sets up a full practic
 
 ## Scripts
 
-### install.cmd
+### install.sh — Debian / Linux Steam
 
-Copies the config files into the CS2 `cfg` folder using robocopy.
+Installs this config into CS2's `game/csgo/cfg` directory:
 
+```bash
+./install.sh
 ```
-CS2\game\csgo\cfg\
+
+The script auto-detects CS2 installed through Steam on Debian/Linux and copies only:
+
+- `autoexec.cfg`
+- `custom_cfg/`
+
+Preview the target without copying:
+
+```bash
+./install.sh --dry-run
+./install.sh --print-target
 ```
 
-### demos.cmd
+If Steam or CS2 is in a non-standard location, pass a Linux path manually:
 
-Processes downloaded demo files (`.dem.zst`) from your Downloads folder:
+```bash
+CS2_ROOT="$HOME/.local/share/Steam/steamapps/common/Counter-Strike Global Offensive" ./install.sh
+CS2_CFG="/path/to/Counter-Strike Global Offensive/game/csgo/cfg" ./install.sh
+```
 
-1. Auto-downloads [zstd](https://github.com/facebook/zstd) if not present
-2. Decompresses all `.dem.zst` files to the CS2 demo folder
-3. Deletes loose `.dem` files from Downloads
-4. Lists all available demos with `playdemo` commands sorted by date
+### demos.sh — Debian / Linux Steam
 
-Steam path is auto-detected from the Windows registry.
+Requires `zstd`:
+
+```bash
+sudo apt install zstd
+```
+
+Processes downloaded demo files (`.dem.zst`) from `~/Downloads`:
+
+```bash
+./demos.sh
+```
+
+What it does:
+
+1. Auto-detects CS2 installed through Steam on Debian/Linux
+2. Deletes loose `.dem` files from Downloads, matching `demos.cmd` behavior
+3. Decompresses all `.dem.zst` files to CS2's `game/csgo` folder
+4. Deletes successfully processed `.dem.zst` files from Downloads
+5. Lists available demos with `playdemo` commands sorted newest-first
+
+Use a custom downloads folder:
+
+```bash
+DOWNLOADS_DIR=/path/to/downloads ./demos.sh
+./demos.sh --source /path/to/downloads
+```
+
+Keep loose `.dem` files in Downloads:
+
+```bash
+./demos.sh --keep-loose
+```
+
+### Windows helpers
+
+`install.cmd` and `demos.cmd` are still available for the old Windows workflow.
