@@ -14,9 +14,11 @@ The `-w 1280 -h 960` options force 4:3 1280x960 on launch. If CS2 keeps starting
 
 ## FPS & Performance
 
-### Critical: Display Mode = Fullscreen
+### Debian/Linux display mode
 
-Borderless window can cost 100–150 FPS. Set **Fullscreen** in Video Settings.
+On Linux, CS2 does not expose the same true exclusive fullscreen mode as Windows. The useful modes are **Windowed** and **Fullscreen Windowed**. Use **Fullscreen Windowed** for normal play.
+
+If CS2 starts as a small 1280x960 surface instead of filling the monitor, open Video Settings, change Display Mode away from **Fullscreen Windowed**, then change it back. This forces CS2 to re-apply the fullscreen-windowed scaling.
 
 ### NVIDIA Control Panel
 
@@ -33,7 +35,7 @@ Go to *Manage 3D Settings → Program Settings → CS2*:
 
 | Setting | Value |
 |---------|-------|
-| Display Mode | Fullscreen |
+| Display Mode | Fullscreen Windowed |
 | Global Shadow Quality | High |
 | Model / Texture Detail | Low |
 | Shader Detail | Low |
