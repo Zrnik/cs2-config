@@ -4,13 +4,27 @@ Personal Counter-Strike 2 configuration with keybinds, crosshair recoil modes, p
 
 ## Launch Options
 
-```
--freq 144 -fullscreen -w 1280 -h 960 -console -novid -nojoy -high +exec autoexec
-```
-
 Set this in Steam: *Library -> Counter-Strike 2 -> Properties -> Launch Options*.
 
-The `-w 1280 -h 960` options force 4:3 1280x960 on launch. If CS2 keeps starting in 1920x1080 after changing it in-game, these launch options override that saved video setting.
+### Debian/Linux safe default
+
+Use native fullscreen-windowed output and let CS2 keep the monitor resolution:
+
+```
+-freq 144 -fullscreen -console -novid -nojoy -high +exec autoexec
+```
+
+Do **not** use `-w 1280 -h 960` with CS2's Linux fullscreen-windowed mode unless you are also using an external scaler. On Linux it can start as a small 1280x960 surface or black-screen after a display-mode toggle.
+
+### 4:3 stretched on Linux
+
+For reliable 1280x960 stretched output on Linux, use an external scaler such as `gamescope` instead of trying to force it from `autoexec.cfg`:
+
+```
+gamescope -f -w 1280 -h 960 -W 1920 -H 1080 -S stretch -- %command% -freq 144 -console -novid -nojoy -high +exec autoexec
+```
+
+Adjust `-W`/`-H` to your monitor's native resolution.
 
 ## FPS & Performance
 
@@ -18,7 +32,7 @@ The `-w 1280 -h 960` options force 4:3 1280x960 on launch. If CS2 keeps starting
 
 On Linux, CS2 does not expose the same true exclusive fullscreen mode as Windows. The useful modes are **Windowed** and **Fullscreen Windowed**. Use **Fullscreen Windowed** for normal play.
 
-If CS2 starts as a small 1280x960 surface instead of filling the monitor, open Video Settings, change Display Mode away from **Fullscreen Windowed**, then change it back. This forces CS2 to re-apply the fullscreen-windowed scaling.
+Display mode is not a good fit for `autoexec.cfg`: it is applied before/around engine startup, and changing it after launch can cause a black screen on Linux. Prefer launch options or `gamescope`.
 
 ### NVIDIA Control Panel
 
