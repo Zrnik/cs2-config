@@ -5,8 +5,12 @@ Personal Counter-Strike 2 configuration with keybinds, crosshair recoil modes, p
 ## Launch Options
 
 ```
--freq 144 -console -novid -nojoy -high +exec autoexec
+-freq 144 -fullscreen -w 1280 -h 960 -console -novid -nojoy -high +exec autoexec
 ```
+
+Set this in Steam: *Library -> Counter-Strike 2 -> Properties -> Launch Options*.
+
+The `-w 1280 -h 960` options force 4:3 1280x960 on launch. If CS2 keeps starting in 1920x1080 after changing it in-game, these launch options override that saved video setting.
 
 ## FPS & Performance
 
@@ -74,10 +78,11 @@ Press `F6` to reload the config at any time.
 
 ### Crosshair
 
-Static crosshair (style 4) with custom size, color, and outline. The config includes a **dual recoil-follow mode** system that changes how the crosshair tracks recoil:
+Static crosshair (style 4) with custom size, color, and outline. The config includes a recoil-follow mode system that changes how the crosshair tracks recoil:
 
 - **Rifle mode** (`Numpad +`, default) — crosshair follows recoil spray only while holding mouse1, then snaps back when you release. Good for seeing where your rifle spray is landing.
 - **Pistol mode** (`Numpad -`) — recoil follow is always on (no snap-back). Crosshair stays where it drifts. A center dot appears as a visual indicator that pistol mode is active.
+- **Static mode** (`Numpad *`) — recoil follow is always off. The crosshair stays static and switches to a slightly different color.
 
 ### Buy Binds
 
