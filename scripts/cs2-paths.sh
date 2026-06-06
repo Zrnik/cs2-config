@@ -92,7 +92,7 @@ Checked Steam roots:
   $HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam
 
 Set one of these manually, for example:
-  CS2_ROOT="$HOME/.local/share/Steam/steamapps/common/Counter-Strike Global Offensive" ./install.sh
-  CS2_CFG="/path/to/Counter-Strike Global Offensive/game/csgo/cfg" ./install.sh
+  CS2_ROOT="$HOME/.local/share/Steam/steamapps/common/Counter-Strike Global Offensive" ./setup.sh
+  CS2_CFG="/path/to/Counter-Strike Global Offensive/game/csgo/cfg" ./setup.sh
 HELP
 }

@@ -11,16 +11,14 @@ for /f "tokens=2*" %%A in ('reg query "HKCU\Software\Valve\Steam" /v "SteamPath"
 set "STEAM_PATH=!STEAM_PATH:/=\!"
 set "DEST=!STEAM_PATH!\steamapps\common\Counter-Strike Global Offensive\game\csgo"
 
-:: Download zstd.exe if not found next to this script
+:: Require zstd.exe next to this script; demos.cmd is only a local demo utility.
 if not exist "%ZSTD_EXE%" (
-    echo zstd not found, downloading...
-    mkdir "%ZSTD_DIR%" 2>nul
-    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-v1.5.5-win64.zip' -OutFile '%ZSTD_DIR%\zstd.zip'"
-    powershell -Command "Expand-Archive -Path '%ZSTD_DIR%\zstd.zip' -DestinationPath '%ZSTD_DIR%' -Force"
-    :: Find zstd.exe inside extracted folder
-    for /r "%ZSTD_DIR%" %%F in (zstd.exe) do copy "%%F" "%ZSTD_EXE%" >nul 2>&1
-    del "%ZSTD_DIR%\zstd.zip" 2>nul
-    echo zstd downloaded OK
+    echo ERROR - zstd.exe not found:
+    echo %ZSTD_EXE%
+    echo.
+    echo Put zstd.exe in the zstd folder next to this script and rerun demos.cmd.
+    pause
+    exit /b 1
 )
 
 :: Verify CS2 folder exists
